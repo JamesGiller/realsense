@@ -55,6 +55,8 @@
   <!-- Worker threads for the nodelet manager -->
   <arg name="num_worker_threads" default="4" />
 
+  <arg name="do_flip" default="false" />
+
   <!-- Push down all topics/nodelets into "camera" namespace -->
   <group ns="$(arg camera)">
 
@@ -86,6 +88,8 @@
       <arg name="color_height"              value="$(arg color_height)" />
       <arg name="depth_fps"                 value="$(arg depth_fps)" />
       <arg name="color_fps"                 value="$(arg color_fps)" />
+
+      <arg name="do_flip"                   value="$(arg do_flip)" />
     </include>
 
     <!-- Load standard constellation of processing nodelets -->

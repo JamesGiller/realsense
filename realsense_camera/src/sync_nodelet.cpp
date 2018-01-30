@@ -46,6 +46,8 @@ namespace realsense_camera
   {
     BaseNodelet::onInit();
 
+    pnh_.param("do_flip", do_flip_, false);
+
     // start thread to publish topics
     topic_thread_ =
             boost::shared_ptr <boost::thread>(new boost::thread (boost::bind(&SyncNodelet::publishSyncTopics, this)));
@@ -178,12 +180,23 @@ namespace realsense_camera
         if (depth_scale_meters == MILLIMETER_METERS)
         {
           image_[stream_index].data = (unsigned char *) image_depth16_;
+
+          if (do_flip_)
+          {
+            cv::flip(image_[stream_index], image_[stream_index], -1);
+          }
         }
         else
         {
           cvWrapper_ = cv::Mat(image_[stream_index].size(), cv_type_[stream_index],
                                const_cast<void *>(reinterpret_cast<const void *>(image_depth16_)),
                                step_[stream_index]);
+
+          if (do_flip_)
+          {
+            cv::flip(cvWrapper_, cvWrapper_, -1);
+          }
+          
           cvWrapper_.convertTo(image_[stream_index], cv_type_[stream_index],
                 static_cast<double>(depth_scale_meters) / static_cast<double>(MILLIMETER_METERS));
         }
@@ -191,6 +204,11 @@ namespace realsense_camera
       else
       {
         image_[stream_index].data = (unsigned char *) (rs_get_frame_data(rs_device_, stream_index, 0));
+
+        if (do_flip_)
+        {
+          cv::flip(image_[stream_index], image_[stream_index], -1);
+        }
       }
     }
 }  // namespace realsense_camera
